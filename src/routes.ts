@@ -50,7 +50,7 @@ router.delete("/produtos", produtoController.delete);
 
 // Produto Pedido
 router.post("/produto_pedido", produtoPedidoController.create);
-router.delete("/produto_pedido/:id", produtoPedidoController.delete);
+router.delete("/produto_pedido/:produto_id/:pedido_id", produtoPedidoController.delete);
 router.get("/produto_pedido/:id", produtoPedidoController.show);
 
 export { router };

@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import ProdutoPedidoRepository from "../../repositories/ProdutoPedidoRepository";
 import ProdutoRepository from "../../repositories/ProdutoRepository";
+import PedidoRepository from "../../repositories/PedidoRepository";
+
+
 import PedidoController from "../Pedido/PedidosController"
 import ProdutoController from "../Produto/ControllerProduto"
 
@@ -48,17 +51,34 @@ class ProdutoPedidoController {
     }
 
     async delete(request: Request, response: Response) {
-        const { id } = request.params;
+        const { produto_id, pedido_id } = request.params;
 
-        if (!id) {
+        if (!produto_id || !pedido_id) {
             throw new Error("Informe ID");
         }
 
         const pedidoProdutoRepository = getCustomRepository(ProdutoPedidoRepository);
+        const pedidoRepository = getCustomRepository(PedidoRepository);
+        const produtoRepository = getCustomRepository(ProdutoRepository);
 
-        await pedidoProdutoRepository.delete({id});
+        const produtoPedidoList = await pedidoProdutoRepository.find({ where: { pedido_id } });
 
-        return response.status(200).json({ status: "Item excluido"})
+        if(!produtoPedidoList) {
+            throw new Error("Não existe produtos para esse pedido");
+        }
+
+        const pedido = await pedidoRepository.findOne({id: pedido_id});
+        const produto = await produtoRepository.findOne({id: produto_id});
+
+        const produtoPedidoFilter = produtoPedidoList.filter(produto => produto.produto_id === produto_id);
+
+        const id = produtoPedidoFilter[0].id;
+
+        const result = await pedidoProdutoRepository.delete({ id });
+
+        await pedidoRepository.update({id: pedido.id}, {valor: pedido.valor - produto.valor });
+
+        return response.status(200).json(result);
     }
 }
 
