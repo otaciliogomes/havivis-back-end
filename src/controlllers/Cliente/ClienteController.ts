@@ -27,11 +27,20 @@ class ClienteController {
         return response.status(200).json(listCliente);
     }
 
+    async index(request: Request, response: Response) {
+        const clienteRepository = getCustomRepository(ClienteRepository);
+        const { id } = request.params;
+
+        const client = await clienteRepository.findOne({ id });
+
+        return response.status(200).json(client);
+    }
+
     async delete(request: Request, response: Response) {
         const clienteRepository = getCustomRepository(ClienteRepository);
         const { id } = request.params;
 
-       const user = await clienteRepository.delete(id);
+        const user = await clienteRepository.delete(id);
 
         return response.status(204).json(user)
     }

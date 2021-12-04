@@ -35,10 +35,13 @@ router.post("/pedidos_fechar", pedidoController.closePedido);
 router.get("/pedidos_total", pedidoController.getTotalPediso);
 router.get("/pedidos_fechados_hoje", pedidoController.pedidosFechadosHoje);
 router.get("/pedidos_nao_fechados", pedidoController.pedidosNaoFechados);
+router.post("/pedidos_cliente", pedidoController.addClientePedido);
+router.delete("/pedidos/:id", pedidoController.delete);
 
 //Cliente
 router.post("/clientes", clienteController.create);
 router.get("/clientes", clienteController.show);
+router.get("/clientes/:id", clienteController.index);
 router.delete("/clientes/:id", clienteController.delete);
 
 //Produto

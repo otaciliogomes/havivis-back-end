@@ -2,6 +2,7 @@ import { Request, response, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import PedidoRepository from "../../repositories/PedidoRepository";
 import ClienteRepository from "../../repositories/ClienteRepository";
+import FuncionarioRepository from "../../repositories/FuncionarioRepository";
 import dayjs from "dayjs";
 
 
@@ -51,10 +52,26 @@ class PedidoController {
 
     async show(request: Request, response: Response) {
         const pedidoRepository = getCustomRepository(PedidoRepository);
+        const clienteRepository = getCustomRepository(ClienteRepository);
+        const funcionarioRepository = getCustomRepository(FuncionarioRepository);
 
         const listaDePedidos = await pedidoRepository.find();
 
-        return response.status(200).json(listaDePedidos);
+        let listPedidos = []
+        await Promise.all(listaDePedidos.map(async (pedido) => {
+            const [cliente] = await clienteRepository.find({ id: pedido.cliente_id });
+            const [item] = await funcionarioRepository.find({ id: pedido.funcionario_id });
+            const result = {
+                ...pedido,
+                cliente_id: cliente,
+                funcionario_id: item
+            }
+
+            listPedidos.push(result);
+        }));
+
+
+        return response.status(200).json(listPedidos);
     }
 
     async updateStatus(id: string, status: string, valueItem: number) {
@@ -65,6 +82,20 @@ class PedidoController {
         const pedidoUpdated = await pedidoRepository.update({ id }, { status, valor: valueItem + response.valor });
 
         return pedidoUpdated;
+    }
+
+    async delete(request: Request, response: Response) {
+        const { id } = request.params;
+        if (!id) {
+            throw new Error("Id não informado");
+        }
+
+        const pedidoRepository = getCustomRepository(PedidoRepository);
+
+        await pedidoRepository.delete({ id });
+
+        return response.status(204).json({message: "Pedido Excluido!"});
+
     }
 
     async closePedido(request: Request, response: Response) {
@@ -102,9 +133,9 @@ class PedidoController {
     async addClientePedido(request: Request, response: Response) {
         const pedidoRepository = getCustomRepository(PedidoRepository);
         const clienteRepository = getCustomRepository(ClienteRepository)
-        const { cliente } = request.body;
+        const { cliente, pedido_id } = request.body;
 
-        const { nome, endereco, telefone, id } = cliente
+        const { nome, endereco, telefone } = cliente;
 
         const clienteCreated = clienteRepository.create({
             nome,
@@ -115,7 +146,7 @@ class PedidoController {
 
         await clienteRepository.save(clienteCreated);
 
-        await pedidoRepository.update({ id }, { cliente_id: clienteCreated.id });
+        await pedidoRepository.update({ id: pedido_id }, { cliente_id: clienteCreated.id });
 
         return response.status(201).json(clienteCreated)
     }
