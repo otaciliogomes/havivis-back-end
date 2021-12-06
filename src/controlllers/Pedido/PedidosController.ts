@@ -44,10 +44,21 @@ class PedidoController {
         }
 
         const pedidoRepository = getCustomRepository(PedidoRepository);
+        const clienteRepository = getCustomRepository(ClienteRepository);
+        const funcionarioRepository = getCustomRepository(FuncionarioRepository);
 
         const listaDePedidos = await pedidoRepository.findOne({ id })
 
-        return response.status(200).json(listaDePedidos);
+        const [cliente] = await clienteRepository.find({ id: listaDePedidos.cliente_id });
+        const [item] = await funcionarioRepository.find({ id: listaDePedidos.funcionario_id });
+
+        const result = {
+            ...listaDePedidos,
+            cliente_id: cliente,
+            funcionario_id: item
+        }
+
+        return response.status(200).json(result);
     }
 
     async show(request: Request, response: Response) {
@@ -94,15 +105,15 @@ class PedidoController {
 
         await pedidoRepository.delete({ id });
 
-        return response.status(204).json({message: "Pedido Excluido!"});
+        return response.status(204).json({ message: "Pedido Excluido!" });
 
     }
 
     async closePedido(request: Request, response: Response) {
-        const { id } = request.body
+        const { id, forma_de_pagamento } = request.body
         const pedidoRepository = getCustomRepository(PedidoRepository);
 
-        await pedidoRepository.update({ id }, { status: "Fechado" });
+        await pedidoRepository.update({ id }, { status: "Fechado", forma_de_pagamento });
 
         return response.status(200).json({ status: "Pedido fechado com sucesso!" })
 
