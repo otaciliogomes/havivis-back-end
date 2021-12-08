@@ -8,6 +8,8 @@ class FuncionarioController {
     async create(request: Request, response: Response) {
         const { nome, email, user, senha, tipo } = request.body;
 
+        console.log({ nome, email, user, senha, tipo })
+
         if (!nome || !email || !user || !tipo) {
             throw new Error("ERROR: 002 Falta argumentos");
         }
