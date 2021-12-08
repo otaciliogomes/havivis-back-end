@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { sign } from "jsonwebtoken";
-import { hash } from "bcryptjs";
+import { hash, compare } from "bcryptjs";
 import FuncionarioRepository from "../../repositories/FuncionarioRepository";
 
 class FuncionarioController {
@@ -47,9 +47,33 @@ class FuncionarioController {
         }
         const funcinarioRepository = getCustomRepository(FuncionarioRepository);
 
-        const funcionario = await funcinarioRepository.findOne({id});
+        const funcionario = await funcinarioRepository.findOne({ id });
 
         return response.status(200).json(funcionario);
+    }
+
+    async logar(request: Request, response: Response) {
+        const { user, senha } = request.body;
+
+        if (!user || !senha) {
+            throw new Error("Usuario não informado");
+        }
+
+        const funcinarioRepository = getCustomRepository(FuncionarioRepository);
+
+        const userExist = await funcinarioRepository.findOne({ where: { user: user } });
+
+        if (!userExist) {
+            throw new Error("Usuario não existe");
+        }
+
+        const senhaCorreta = compare(userExist.senha, senha);
+
+        if (!senhaCorreta) {
+            throw new Error("senha incorreta");
+        }
+
+        return response.status(200).json(userExist);
     }
 
     async show(request: Request, response: Response) {

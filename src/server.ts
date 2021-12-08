@@ -30,6 +30,6 @@ app.use((err: Error, request: Request, response: Response, next: NextFunction) =
 })
 
 
-app.listen( process.env.PORT || 3333, () => console.log('Server is run!'));
+app.listen( process.env.PORT || 3334, () => console.log('Server is run!'));
 
 export { app };

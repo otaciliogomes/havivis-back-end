@@ -27,6 +27,9 @@ router.get("/funcionarios", funcionarioController.show);
 router.get("/funcionarios/:id", funcionarioController.index);
 router.post("/funcionarios_login", funcionarioController.login);
 
+//Login
+router.post("/funcionarios/logar", funcionarioController.logar);
+
 //Pedido
 router.post("/pedidos", pedidoController.create);
 router.get("/pedidos/:id", pedidoController.showOne);

@@ -12,14 +12,18 @@ class ProdutoController {
 
         const produtoRepository = getCustomRepository(ProdutoRepository);
 
+        const newValor = valor.toFixed(2)
+
+
         const produto = produtoRepository.create({
             descricao,
             imagem,
             nome,
-            valor
+            valor: newValor
         });
 
-        await produtoRepository.save(produto);
+
+        const res = await produtoRepository.save(produto);
 
         return response.status(201).json(produto);
 

@@ -10,6 +10,7 @@ class PedidoController {
     async create(request: Request, response: Response) {
         const { funcionario_id } = request.body;
         const status = "Aberto";
+        console.log(funcionario_id)
 
         if (!status) {
             throw new Error("ERROR: Status não informado");
