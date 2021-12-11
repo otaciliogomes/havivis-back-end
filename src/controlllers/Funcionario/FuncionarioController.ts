@@ -10,7 +10,7 @@ class FuncionarioController {
 
         console.log({ nome, email, user, senha, tipo })
 
-        if (!nome || !email || !user || !tipo) {
+        if (!nome || !email || !user) {
             throw new Error("ERROR: 002 Falta argumentos");
         }
 
@@ -34,10 +34,13 @@ class FuncionarioController {
             token,
             user,
             tipo,
-            senha: passwordHash
+            senha: passwordHash,
+            tipagem: tipo
         });
 
-        await userRepository.save(userCreated);
+        const result = await userRepository.save(userCreated);
+
+        console.log(result)
 
         return response.status(201).json(userCreated)
     }
@@ -114,6 +117,23 @@ class FuncionarioController {
         await funcinarioRepository.update({ id: userExist.id }, { token })
 
         return response.status(200).json({ ...userExist, token });
+    }
+
+    async delete(request: Request, response: Response) {
+        const { id } = request.params;
+        if (!id) {
+            throw new Error("id não informado")
+        }
+        const funcinarioRepository = getCustomRepository(FuncionarioRepository);
+
+        const funcionario = await funcinarioRepository.findOne({ id })
+
+        if (!funcionario) {
+            throw new Error("funcionario não existe")
+        }
+        await funcinarioRepository.remove(funcionario)
+
+        return response.status(204);
     }
 }
 

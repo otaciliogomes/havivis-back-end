@@ -43,7 +43,7 @@ export class Pedido1635903190448 implements MigrationInterface {
                     },
                     {
                         name: "valor",
-                        type: "int",
+                        type: "float",
                         default: null
                     }
 

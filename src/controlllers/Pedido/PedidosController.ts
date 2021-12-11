@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 
 class PedidoController {
     async create(request: Request, response: Response) {
-        const { funcionario_id } = request.body;
+        const { funcionario_id, valor } = request.body;
         const status = "Aberto";
         console.log(funcionario_id)
 
@@ -24,10 +24,13 @@ class PedidoController {
         const day = dayNow.getDate();
         const newDate = `${day}/${getMonth + 1}/${year}`;
 
+
+        // const valorFloat = valor.toFixed(2)
+
         const pedido = pedidoRepository.create({
             forma_de_pagamento: "",
             obeservacao: "",
-            valor: 0,
+            valor: 0.0,
             status,
             funcionario_id
         })
@@ -180,6 +183,23 @@ class PedidoController {
         return response.status(200).json(pedidosFechado);
     }
 
+    async pedidosHoje(request: Request, response: Response) {
+        const pedidoRepository = getCustomRepository(PedidoRepository);
+        const pedidos = await pedidoRepository.find();
+
+        const todayOrders = new Date().toLocaleDateString();
+
+        const pedidosFechado = pedidos.map(pedido => {
+            const pedidoDay = dayjs(pedido.created_at).format('DD/MM/YYYY')
+            if (todayOrders === pedidoDay) {
+                return;
+            }
+            return pedido;
+        });
+
+        return response.status(200).json(pedidosFechado);
+    }
+
     async pedidosNaoFechados(request: Request, response: Response) {
         const pedidoRepository = getCustomRepository(PedidoRepository);
 
@@ -199,6 +219,28 @@ class PedidoController {
         await pedidoRepository.update({ id }, { valor: pedido.valor + valor, status: "Em andamento" });
 
         return;
+    }
+
+    async update(request: Request, response: Response) {
+        const { id, forma_de_pagamento, valor, funcionario_id, cliente_id } = request.body;
+
+        const clienteRepository = getCustomRepository(ClienteRepository);
+        const funcionarioRepository = getCustomRepository(FuncionarioRepository);
+        const pedidoRepository = getCustomRepository(PedidoRepository);
+
+
+        const funcioanrio = await funcionarioRepository.findOne({ nome: funcionario_id });
+        const cliente = await clienteRepository.findOne({ nome: cliente_id });
+
+
+        await pedidoRepository.update({id}, {
+            forma_de_pagamento,
+            valor,
+            funcionario_id: funcioanrio.id,
+            cliente_id: cliente.id
+        });
+
+        return response.status(200);
     }
 }
 

@@ -22,6 +22,9 @@ export class Funcionario {
     tipo: boolean;
 
     @Column()
+    tipagem: boolean;
+
+    @Column()
     token: string;
 
     constructor() {

@@ -26,6 +26,7 @@ router.post("/funcionarios", funcionarioController.create);
 router.get("/funcionarios", funcionarioController.show);
 router.get("/funcionarios/:id", funcionarioController.index);
 router.post("/funcionarios_login", funcionarioController.login);
+router.delete("/funcionarios/:id", funcionarioController.delete);
 
 //Login
 router.post("/funcionarios/logar", funcionarioController.logar);
@@ -36,6 +37,7 @@ router.get("/pedidos/:id", pedidoController.showOne);
 router.get("/pedidos", pedidoController.show);
 router.post("/pedidos_fechar", pedidoController.closePedido);
 router.get("/pedidos_total", pedidoController.getTotalPediso);
+router.get("/pedidos_hoje", pedidoController.pedidosHoje);
 router.get("/pedidos_fechados_hoje", pedidoController.pedidosFechadosHoje);
 router.get("/pedidos_nao_fechados", pedidoController.pedidosNaoFechados);
 router.post("/pedidos_cliente", pedidoController.addClientePedido);
@@ -52,7 +54,7 @@ router.post("/produtos", produtoController.create);
 router.get("/produtos", produtoController.show);
 router.get("/produtos/:id", produtoController.index);
 router.put("/produtos", produtoController.update);
-router.delete("/produtos", produtoController.delete);
+router.delete("/produtos/:id", produtoController.delete);
 
 // Produto Pedido
 router.post("/produto_pedido", produtoPedidoController.create);

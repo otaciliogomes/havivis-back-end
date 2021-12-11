@@ -26,7 +26,7 @@ export class Produto1635904010518 implements MigrationInterface {
                     },
                     {
                         name: "valor",
-                        type: "int"
+                        type: "float"
                     }
                 ]
             })

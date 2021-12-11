@@ -61,7 +61,7 @@ class ProdutoController {
     }
 
     async delete(request: Request, response: Response) {
-        const { id } = request.body;
+        const { id } = request.params;
 
         if (!id) {
             throw new Error("ID não informado")
